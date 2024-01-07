@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { css } from "@emotion/css";
 import axios from "axios";
+import ReactMarkdown from "react-markdown";
 
 interface ChatMessage {
   role: string;
@@ -135,6 +136,14 @@ const App = () => {
     setInput("");
   };
 
+  const renderChatMessage = (message: ChatMessage) => {
+    if (message.role === "system") {
+      // マークダウン形式のメッセージをHTMLに変換して表示
+      return <ReactMarkdown>{message.content}</ReactMarkdown>;
+    }
+    return <div>{message.content}</div>; // 通常のテキストメッセージ
+  };
+
   return (
     <div className={chatContainerStyle}>
       <div className={chatHistoryStyle}>
@@ -145,7 +154,7 @@ const App = () => {
               chat.role === "user" ? userMessageStyle : botMessageStyle
             }
           >
-            {chat.content}
+            {renderChatMessage(chat)}
           </div>
         ))}
       </div>
