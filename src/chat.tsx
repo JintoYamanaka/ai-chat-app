@@ -43,13 +43,14 @@ const App = () => {
 
   const sendMessage = async () => {
     const userMessage: ChatMessage = { role: "user", content: input };
+    // 画面上の会話履歴を更新
     const updatedChatHistory = [...chatHistory, userMessage];
 
     try {
       const response = await axios.post(
         `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${process.env.REACT_APP_GOOGLE_API_KEY}`,
         {
-          contents: [{ parts: [{ text: input }] }],
+          contents: [{ parts: [{ text: input }] }], // 現在のメッセージのみを送信
         },
         {
           headers: {
@@ -58,6 +59,7 @@ const App = () => {
         }
       );
 
+      // APIからの応答を処理
       const botResponse = response.data;
       let botMessageContent = "";
 
@@ -83,6 +85,7 @@ const App = () => {
         content: botMessageContent,
       };
 
+      // 会話履歴を更新（ユーザーとボットのメッセージを含む）
       setChatHistory([...updatedChatHistory, botMessage]);
     } catch (error) {
       console.error("Google API error:", error);
