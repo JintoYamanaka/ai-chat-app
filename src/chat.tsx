@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { css } from "@emotion/css";
 import axios from "axios";
+import ReactMarkdown from "react-markdown";
 
 interface ChatMessage {
   role: string;
@@ -12,29 +13,70 @@ interface Part {
   // 応答の構造に基づいて他のプロパティがあればここに追加
 }
 
-// Emotion CSSスタイル
 const chatContainerStyle = css`
-  /* コンテナスタイル */
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background-color: #f5f5f5;
 `;
 
 const chatHistoryStyle = css`
-  /* チャット履歴スタイル */
+  overflow-y: auto;
+  flex-grow: 1;
+  padding: 20px;
+  margin-bottom: 60px; // 入力エリアの高さに応じて調整
 `;
 
 const userMessageStyle = css`
-  /* ユーザーメッセージスタイル */
+  margin-bottom: 10px;
+  padding: 10px;
+  background-color: #e1f5fe;
+  border-radius: 10px;
+  max-width: 70%;
+  align-self: flex-end;
 `;
 
 const botMessageStyle = css`
-  /* ボットメッセージスタイル */
+  margin-bottom: 10px;
+  padding: 10px;
+  background-color: #ede7f6;
+  border-radius: 10px;
+  max-width: 70%;
+  align-self: flex-start;
 `;
 
 const inputStyle = css`
-  /* 入力フィールドスタイル */
+  flex: 1;
+  padding: 10px 15px;
+  font-size: 16px;
+  border: 2px solid #dedede;
+  border-radius: 4px;
+  margin-right: 10px;
 `;
 
 const buttonStyle = css`
-  /* 送信ボタンスタイル */
+  padding: 10px 20px;
+  background-color: #5c6bc0;
+  color: white;
+  font-size: 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  &:hover {
+    background-color: #3949ab;
+  }
+`;
+
+const inputAreaStyle = css`
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+  background-color: #fafafa;
+  position: fixed; // 固定位置
+  bottom: 0; // 下部に固定
+  left: 0;
+  right: 0; // 左右に広がるように
+  box-shadow: 0 -1px 10px rgba(0, 0, 0, 0.1); // 影で区別
 `;
 
 const App = () => {
@@ -94,6 +136,14 @@ const App = () => {
     setInput("");
   };
 
+  const renderChatMessage = (message: ChatMessage) => {
+    if (message.role === "system") {
+      // マークダウン形式のメッセージをHTMLに変換して表示
+      return <ReactMarkdown>{message.content}</ReactMarkdown>;
+    }
+    return <div>{message.content}</div>; // 通常のテキストメッセージ
+  };
+
   return (
     <div className={chatContainerStyle}>
       <div className={chatHistoryStyle}>
@@ -104,19 +154,21 @@ const App = () => {
               chat.role === "user" ? userMessageStyle : botMessageStyle
             }
           >
-            {chat.content}
+            {renderChatMessage(chat)}
           </div>
         ))}
       </div>
-      <input
-        type="text"
-        value={input}
-        onChange={(e) => setInput(e.target.value)}
-        className={inputStyle}
-      />
-      <button onClick={sendMessage} className={buttonStyle}>
-        Send
-      </button>
+      <div className={inputAreaStyle}>
+        <input
+          type="text"
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          className={inputStyle}
+        />
+        <button onClick={sendMessage} className={buttonStyle}>
+          Send
+        </button>
+      </div>
     </div>
   );
 };
