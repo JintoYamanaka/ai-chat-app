@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { css } from "@emotion/css";
 import axios from "axios";
 import ReactMarkdown from "react-markdown";
@@ -10,7 +10,6 @@ interface ChatMessage {
 
 interface Part {
   text: string;
-  // 応答の構造に基づいて他のプロパティがあればここに追加
 }
 
 const chatContainerStyle = css`
@@ -24,7 +23,7 @@ const chatHistoryStyle = css`
   overflow-y: auto;
   flex-grow: 1;
   padding: 20px;
-  margin-bottom: 60px; // 入力エリアの高さに応じて調整
+  margin-bottom: 60px;
 `;
 
 const userMessageStyle = css`
@@ -72,11 +71,11 @@ const inputAreaStyle = css`
   justify-content: space-between;
   padding: 10px;
   background-color: #fafafa;
-  position: fixed; // 固定位置
-  bottom: 0; // 下部に固定
+  position: fixed;
+  bottom: 0;
   left: 0;
-  right: 0; // 左右に広がるように
-  box-shadow: 0 -1px 10px rgba(0, 0, 0, 0.1); // 影で区別
+  right: 0;
+  box-shadow: 0 -1px 10px rgba(0, 0, 0, 0.1);
 `;
 
 const App = () => {
