@@ -4,8 +4,8 @@ import axios from 'axios'; // HTTPリクエスト用
 
 // チャットメッセージのインターフェイス
 interface ChatMessage {
-  user: string;
-  message: string;
+  role: string;
+  content: string;
 }
 
 // Emotion CSSスタイル
@@ -34,39 +34,56 @@ const buttonStyle = css`
 `;
 
 const App = () => {
-  const [input, setInput] = useState<string>('');
-  const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
-
-  const sendMessage = async () => {
-    const userMessage: ChatMessage = { user: 'You', message: input };
-    setChatHistory([...chatHistory, userMessage]);
-
-    // ChatGPT APIにリクエストを送信
-    const response = await axios.post('API_ENDPOINT', { message: input });
-    const botMessage: ChatMessage = { user: 'Bot', message: response.data };
-
-    setChatHistory([...chatHistory, userMessage, botMessage]);
-    setInput('');
-  };
-
-  return (
-    <div className={chatContainerStyle}>
-      <div className={chatHistoryStyle}>
-        {chatHistory.map((chat, index) => (
-          <div key={index} className={chat.user === 'You' ? userMessageStyle : botMessageStyle}>
-            {chat.message}
-          </div>
-        ))}
+    const [input, setInput] = useState<string>('');
+    const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
+  
+    const sendMessage = async () => {
+      const userMessage: ChatMessage = { role: 'user', content: input };
+      setChatHistory([...chatHistory, userMessage]);
+  
+      try {
+        const response = await axios.post(
+          'https://api.openai.com/v1/chat/completions',
+          {
+            model: "gpt-3.5-turbo",
+            messages: chatHistory.concat(userMessage)
+          },
+          {
+            headers: {
+              'Authorization': `Bearer ${process.env.API_KEY}`,
+              'Content-Type': 'application/json'
+            }
+          }
+        );
+  
+        const botMessage: ChatMessage = { role: 'system', content: response.data.choices[0].message.content };
+        setChatHistory([...chatHistory, userMessage, botMessage]);
+      } catch (error) {
+        console.error('ChatGPT API error:', error);
+        // エラー処理
+      }
+  
+      setInput('');
+    };
+  
+    return (
+      <div className={chatContainerStyle}>
+        <div className={chatHistoryStyle}>
+          {chatHistory.map((chat, index) => (
+            <div key={index} className={chat.role === 'user' ? userMessageStyle : botMessageStyle}>
+              {chat.content}
+            </div>
+          ))}
+        </div>
+        <input
+          type="text"
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          className={inputStyle}
+        />
+        <button onClick={sendMessage} className={buttonStyle}>Send</button>
       </div>
-      <input
-        type="text"
-        value={input}
-        onChange={(e) => setInput(e.target.value)}
-        className={inputStyle}
-      />
-      <button onClick={sendMessage} className={buttonStyle}>Send</button>
-    </div>
-  );
-};
-
-export default App;
+    );
+  };
+  
+  export default App;
