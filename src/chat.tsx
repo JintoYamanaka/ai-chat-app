@@ -78,7 +78,7 @@ const inputAreaStyle = css`
   box-shadow: 0 -1px 10px rgba(0, 0, 0, 0.1);
 `;
 
-const App = () => {
+const Chat = () => {
   const [input, setInput] = useState<string>("");
   const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
 
@@ -172,4 +172,4 @@ const App = () => {
   );
 };
 
-export default App;
+export default Chat;
