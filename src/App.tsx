@@ -1,5 +1,5 @@
-import Chat from "./Chat";
 import { css } from "@emotion/css";
+import Chat from "./Chat";
 
 const headerStyle = css`
   padding: 15px;
