@@ -1,4 +1,4 @@
-import Chat from "./chat";
+import Chat from "./Chat";
 import { css } from "@emotion/css";
 
 const headerStyle = css`
